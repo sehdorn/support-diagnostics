@@ -16,10 +16,7 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 
 public class SystemUtils {
@@ -168,5 +165,36 @@ public class SystemUtils {
             logger.info("Unsupported OS -defaulting to Linux: {}", osName);
             return  Constants.linuxPlatform;
         }
+    }
+
+    public static boolean isRunningInDocker(){
+        boolean isDocker = false;
+        try {
+            File cgroups = new File("/proc/1/cgroup");
+            // If it's not there we aren't in a container
+            if( !cgroups.canExecute()){
+                return false;
+            }
+
+            List<String> entries = IOUtils.readLines(new FileInputStream(cgroups), Constants.UTF_8);
+            isDocker = checkCGroupEntries(entries);
+
+        } catch (Exception e) {
+            logger.log(SystemProperties.DIAG, e);
+            logger.info("Error encountered during check docker embedding. {} {}", e.getMessage(), Constants.CHECK_LOG);
+            logger.info("Assuming no container, local calls enabled.");
+        }
+
+        return isDocker;
+    }
+
+    public static boolean checkCGroupEntries(List<String> cgroups){
+        for(String entry: cgroups){
+            String path = entry.substring(entry.indexOf("/"));
+            if(path.toLowerCase().contains("docker")){
+                return true;
+            }
+        }
+        return false;
     }
 }

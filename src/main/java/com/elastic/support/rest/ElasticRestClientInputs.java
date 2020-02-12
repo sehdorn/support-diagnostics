@@ -86,6 +86,10 @@ public abstract class ElasticRestClientInputs extends BaseInputs {
 
     Logger logger = LogManager.getLogger(ElasticRestClientInputs.class);
 
+    public ElasticRestClientInputs(){
+        super();
+    }
+
     public List<String> parseInputs(String args[]){
         List<String> errors = super.parseInputs(args);
         scheme = isSsl ? "https": "http";

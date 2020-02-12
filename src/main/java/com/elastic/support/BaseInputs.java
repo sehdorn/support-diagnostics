@@ -5,6 +5,7 @@ import com.beust.jcommander.Parameter;
 import com.elastic.support.util.ResourceCache;
 import com.elastic.support.util.SystemProperties;
 
+import com.elastic.support.util.SystemUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -56,6 +57,14 @@ public abstract class BaseInputs {
             .withInputTrimming(true)
             .withValueChecker((String val, String propname) -> validateFile(val));
     // End Input Readers
+
+    public boolean runningInDocker = SystemUtils.isRunningInDocker();
+
+    public BaseInputs(){
+        if(runningInDocker){
+            outputDir = "/diagnostic-output";
+        }
+    }
 
     public abstract boolean runInteractive();
 
