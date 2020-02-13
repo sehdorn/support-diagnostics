@@ -88,9 +88,6 @@ public abstract class ElasticRestClientInputs extends BaseInputs {
 
     public ElasticRestClientInputs(){
         super();
-        if(runningInDocker){
-            host = "";
-        }
     }
 
     public List<String> parseInputs(String args[]){
@@ -132,22 +129,12 @@ public abstract class ElasticRestClientInputs extends BaseInputs {
 
     protected void runHttpInteractive(){
 
-        if(runningInDocker){
-            host = ResourceCache.textIO.newStringInputReader()
-                    .withMinLength(1)
-                    .withIgnoreCase()
-                    .withInputTrimming(true)
-                    .withValueChecker((String val, String propname) -> validateHost(val))
-                    .read(SystemProperties.lineSeparator + hostDescription);
-        }
-        else {
-            host = ResourceCache.textIO.newStringInputReader()
-                    .withDefaultValue(host)
-                    .withIgnoreCase()
-                    .withInputTrimming(true)
-                    .withValueChecker((String val, String propname) -> validateHost(val))
-                    .read(SystemProperties.lineSeparator + hostDescription);
-        }
+        host = ResourceCache.textIO.newStringInputReader()
+                .withDefaultValue(host)
+                .withIgnoreCase()
+                .withInputTrimming(true)
+                .withValueChecker((String val, String propname) -> validateHost(val))
+                .read(SystemProperties.lineSeparator + hostDescription);
 
         port = ResourceCache.textIO.newIntInputReader()
                 .withDefaultValue(port)
@@ -224,10 +211,6 @@ public abstract class ElasticRestClientInputs extends BaseInputs {
 
         if(StringUtils.isEmpty(hostString)){
             return Collections.singletonList("Host is required.");
-        }
-
-        if(runningInDocker && Constants.localAddressList.contains(host)){
-            return Collections.singletonList("Local addresses are not permitted when running in a Docker container. Please use an assigned host name or IP address.");
         }
 
         if (hostString.toLowerCase().matches("((http|https?)://)?.*:(\\d{4,5})")) {

@@ -10,13 +10,10 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.util.SystemPropertiesPropertySource;
 
 import java.io.*;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -173,11 +170,9 @@ public class SystemUtils {
     public static boolean isRunningInDocker(){
         boolean isDocker = false;
         try {
-            Path path = Paths.get(SystemProperties.userDir).getParent();
             File cgroups = new File("/proc/1/cgroup");
-            logger.info(cgroups.getAbsolutePath());
             // If it's not there we aren't in a container
-            if( !cgroups.exists()){
+            if( !cgroups.canExecute()){
                 return false;
             }
 

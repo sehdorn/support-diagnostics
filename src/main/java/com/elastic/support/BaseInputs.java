@@ -62,7 +62,6 @@ public abstract class BaseInputs {
 
     public BaseInputs(){
         if(runningInDocker){
-            logger.info("docker");
             outputDir = "/diagnostic-output";
         }
     }
@@ -94,13 +93,9 @@ public abstract class BaseInputs {
     }
 
     protected void runOutputDirInteractive(){
-        String output = ResourceCache.textIO.newStringInputReader()
-                .withMinLength(0)
+        outputDir = ResourceCache.textIO.newStringInputReader()
                 .withValueChecker(( String val, String propname) -> validateFile(val))
                 .read(SystemProperties.lineSeparator + outputDirDescription);
-        if(StringUtils.isNotEmpty(output)){
-            outputDir = output;
-        }
     }
 
     public List<String> validatePort(int val){

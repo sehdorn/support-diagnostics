@@ -123,9 +123,9 @@ public class DiagnosticInputs extends ElasticRestClientInputs {
     // End Input Fields
 
     String[] typeEntries;
+    boolean runningInDocker = SystemUtils.isRunningInDocker();
 
     public DiagnosticInputs(){
-        super();
         if(runningInDocker){
             typeEntries = diagnosticTypeEntriesDocker;
         }
