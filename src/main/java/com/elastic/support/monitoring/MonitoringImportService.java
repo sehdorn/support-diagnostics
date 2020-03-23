@@ -38,7 +38,7 @@ public class MonitoringImportService extends ElasticRestClientService {
                     inputs.proxyUser,
                     inputs.proxyPassword,
                     inputs.pkiKeystore,
-                    inputs.pkiKeystorePass,
+                    inputs.pkiKeystorePassword,
                     inputs.skipVerification,
                     config.connectionTimeout,
                     config.connectionRequestTimeout,

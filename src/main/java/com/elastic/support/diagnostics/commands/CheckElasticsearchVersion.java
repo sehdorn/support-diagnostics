@@ -49,7 +49,7 @@ public class CheckElasticsearchVersion implements Command {
                     context.diagnosticInputs.proxyUser,
                     context.diagnosticInputs.proxyPassword,
                     context.diagnosticInputs.pkiKeystore,
-                    context.diagnosticInputs.pkiKeystorePass,
+                    context.diagnosticInputs.pkiKeystorePassword,
                     context.diagnosticInputs.skipVerification,
                     context.diagsConfig.connectionTimeout,
                     context.diagsConfig.connectionRequestTimeout,

@@ -63,7 +63,7 @@ public abstract class ElasticRestClientInputs extends BaseInputs {
     public boolean isPkiPass = false;
     // Not shown in the the help display due to security risks - allow input via command line arguments in plain text.
     @Parameter(names = {"--pkiPassText"}, hidden = true)
-    public String pkiKeystorePass = "";
+    public String pkiKeystorePassword = "";
     // Authenticated proxies
     @Parameter(names = {"--proxyUser"}, description = proxyUserDescription)
     public String proxyUser = "";
@@ -105,6 +105,19 @@ public abstract class ElasticRestClientInputs extends BaseInputs {
         errors.addAll(ObjectUtils.defaultIfNull(validatePort(port), emptyList));
         errors.addAll(ObjectUtils.defaultIfNull(validatePort(proxyPort), emptyList));
 
+        if(credentials.containsKey("password")){
+            password = credentials.get("password");
+            isPassword = false;
+        }
+        if(credentials.containsKey("pkiKeystorePassword")){
+            pkiKeystorePassword = credentials.get("pkiKeystorePassword");
+            isPkiPass = false;
+        }
+        if(credentials.containsKey("proxyPassword")){
+            proxyPassword = credentials.get("proxyPassword");
+            isPkiPass = false;
+        }
+
         // If we got this far, get the passwords.
         if(isPassword){
                 password = standardPasswordReader
@@ -113,7 +126,7 @@ public abstract class ElasticRestClientInputs extends BaseInputs {
 
         if(StringUtils.isNotEmpty(pkiKeystore)){
             if(isPkiPass){
-                pkiKeystorePass = standardPasswordReader
+                pkiKeystorePassword = standardPasswordReader
                         .read(pkiKeystorePasswordDescription);
             }
         }
@@ -192,7 +205,7 @@ public abstract class ElasticRestClientInputs extends BaseInputs {
             else{
                 pkiKeystore = standardFileReader
                         .read(SystemProperties.lineSeparator + pkiKeystoreDescription);
-                pkiKeystorePass = standardPasswordReader
+                pkiKeystorePassword = standardPasswordReader
                         .read(SystemProperties.lineSeparator + pkiKeystorePasswordDescription);
             }
         }
@@ -216,7 +229,6 @@ public abstract class ElasticRestClientInputs extends BaseInputs {
             proxyPassword = standardPasswordReader
                     .read(SystemProperties.lineSeparator + proxyPasswordDescription);
         }
-
     }
 
     public List<String> validateHost(String hostString) {
@@ -267,7 +279,7 @@ public abstract class ElasticRestClientInputs extends BaseInputs {
                 ", isPassword=" + isPassword +
                 ", pkiKeystore='" + pkiKeystore + '\'' +
                 ", isPkiPass=" + isPkiPass +
-                ", pkiKeystorePass='" + pkiKeystorePass + '\'' +
+                ", pkiKeystorePassword='" + pkiKeystorePassword + '\'' +
                 ", proxyUser='" + proxyUser + '\'' +
                 ", isProxyPass=" + isProxyPass +
                 ", isSsl=" + isSsl +

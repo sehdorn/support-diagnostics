@@ -70,7 +70,7 @@ public class RunLogstashQueries extends BaseQuery {
                             context.diagnosticInputs.host,
                             context.diagnosticInputs.remotePort,
                             context.diagnosticInputs.keyfile,
-                            context.diagnosticInputs.pkiKeystorePass,
+                            context.diagnosticInputs.pkiKeystorePassword,
                             context.diagnosticInputs.knownHostsFile,
                             context.diagnosticInputs.trustRemote,
                             context.diagnosticInputs.isSudo

@@ -91,7 +91,7 @@ public class DiagnosticInputs extends ElasticRestClientInputs {
     public final static String  remoteUserDescription = "User account to be used for running system commands and obtaining logs. This account must have sufficient authority to run the commands and access the logs.";
     public final static String  remotePasswordDescription = "Password for the remote login.";
     public final static String  sshKeyFileDescription= "File containing keys for remote host authentication.";
-    public final static String  sshKeyFIlePassphraseDescription= "Passphrase for the keyfile if required.";
+    public final static String  sshKeyFilePassphraseDescription= "Passphrase for the keyfile if required.";
     public final static String  trustRemoteDescription = "Bypass the known hosts file and trust the specified remote server. Defaults to false.";
     public final static String  knownHostsDescription = "Known hosts file to search for target server. Default is ~/.ssh/known_hosts for Linux/Mac. Windows users should always set this explicitly.";
     public final static String  sudoDescription = "Use sudo for remote commands? If not used, log retrieval and some system calls may fail.";
@@ -180,7 +180,7 @@ public class DiagnosticInputs extends ElasticRestClientInputs {
 
                 if(checkMe){
                     keyfilePassword = standardPasswordReader
-                            .read(SystemProperties.lineSeparator + sshKeyFIlePassphraseDescription);
+                            .read(SystemProperties.lineSeparator + sshKeyFilePassphraseDescription);
                 }
                 if(isSudo){
                     checkMe = standardBooleanReader
@@ -227,14 +227,23 @@ public class DiagnosticInputs extends ElasticRestClientInputs {
         errors.addAll(ObjectUtils.defaultIfNull(validateFile(keyfile), emptyList));
         errors.addAll(ObjectUtils.defaultIfNull(validateFile(knownHostsFile), emptyList));
 
-        if(isRemotePass){
+        if(credentials.containsKey("remotePassword")){
+            remotePassword = credentials.get("remotePassword");
+            isRemotePass = false;
+        }
+        if(credentials.containsKey("keyfilePassword")){
+            keyfilePassword = credentials.get("keyfilePassword");
+            isKeyFilePass = false;
+        }
+
+        if (isRemotePass) {
             remotePassword = standardPasswordReader
                     .read(remotePasswordDescription);
         }
 
-        if(isKeyFilePass){
+        if (isKeyFilePass) {
             keyfilePassword = standardPasswordReader
-                    .read(sshKeyFIlePassphraseDescription);
+                    .read(sshKeyFilePassphraseDescription);
         }
 
         return errors;
@@ -258,7 +267,7 @@ public class DiagnosticInputs extends ElasticRestClientInputs {
             return Collections.singletonList(val + " was not a valid diagnostic type. Enter --help to see valid choices");
         }
 
-        if(runningInDocker &&val.contains("local") ){
+        if (runningInDocker && val.contains("local")) {
             return Collections.singletonList(val + " cannot be run from within a Docker container. Please use api or remote options.");
         }
 

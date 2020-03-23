@@ -117,7 +117,7 @@ public class RestClient implements Closeable {
             String proxyUser,
             String proxyPassword,
             String pkiKeystore,
-            String pkiKeystorePass,
+            String pkiKeystorePassword,
             boolean bypassVerify,
             int connectionTimeout,
             int connectionRequestTimeout,
@@ -160,8 +160,8 @@ public class RestClient implements Closeable {
             if(StringUtils.isNotEmpty(pkiKeystore) ) {
                 // If they are using a PKI auth set it up now
                 KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
-                ks.load(new FileInputStream(pkiKeystore), pkiKeystorePass.toCharArray());
-                sslContextBuilder.loadKeyMaterial(ks, pkiKeystorePass.toCharArray());
+                ks.load(new FileInputStream(pkiKeystore), pkiKeystorePassword.toCharArray());
+                sslContextBuilder.loadKeyMaterial(ks, pkiKeystorePassword.toCharArray());
             }
 
             SSLContext sslCtx = sslContextBuilder.build();

@@ -2,6 +2,8 @@ package com.elastic.support;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterDescription;
+import com.elastic.support.util.JsonYamlUtils;
 import com.elastic.support.util.ResourceCache;
 import com.elastic.support.util.SystemProperties;
 
@@ -13,15 +15,12 @@ import org.apache.logging.log4j.Logger;
 import org.beryx.textio.*;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public abstract class BaseInputs {
 
     private static final Logger logger = LogManager.getLogger(BaseInputs.class);
     public static final String outputDirDescription = "Fully qualified path to an output directory. This directory must already exist. If not specified the diagnostic directory will be used.";
-    public static final String interactiveModeDescription = "Interactive mode. Prompt for all values and validate as you go.";
     public static final String bypassDiagVerifyDescription = "Bypass the diagnostic version check. Use when internet outbound HTTP access is blocked by a firewall.";
     protected List<String> emptyList = new ArrayList<>();
     protected JCommander jCommander;
@@ -30,6 +29,10 @@ public abstract class BaseInputs {
 
     @Parameter(names = {"-?", "--help"}, description = "Help contents.", help = true)
     public boolean help;
+
+    @Parameter(names = {"--parameters"}, description = "Absolute path to a parameters.yml file containing values for password fields to bypass the prompts. Ensure that the permissions for the file are set appropriately. Paths with spaces must be enclosed in quotes.")
+    String parameters;
+    protected Map<String, String> credentials = new HashMap<>();
 
     // If no output directory was specified default to the working directory
     @Parameter(names = {"-o", "--out", "--output", "--outputDir"}, description = outputDirDescription)
@@ -69,14 +72,26 @@ public abstract class BaseInputs {
     public abstract boolean runInteractive();
 
     public List<String> parseInputs(String[] args){
-        logger.info("Processing diagnosticInputs...");
-        jCommander = new JCommander(this);
-        jCommander.setCaseSensitiveOptions(true);
-        jCommander.parse(args);
-        // If we're in help just shut down.
-        if (help) {
-            jCommander.usage();
-            return emptyList;
+        try {
+            logger.info("Processing diagnosticInputs...");
+            jCommander = new JCommander(this);
+            jCommander.setCaseSensitiveOptions(true);
+            jCommander.parse(args);
+
+            if(StringUtils.isNotEmpty(parameters)){
+                credentials = JsonYamlUtils.readYamlFromPath(parameters, true);
+            }
+
+            // If we're in help just shut down.
+            if (help) {
+                jCommander.usage();
+                return emptyList;
+            }
+        } catch (Exception e) {
+            logger.log(SystemProperties.DIAG, "Error processing input arguments", e);
+            ArrayList<String> errors = new ArrayList<>();
+            errors.add("Error processing input arguments. " + Constants.CHECK_LOG);
+            return errors;
         }
 
         return ObjectUtils.defaultIfNull(validateDir(outputDir), emptyList);
