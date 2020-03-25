@@ -322,8 +322,4 @@ public class CheckPlatformDetails implements Command {
         return true;
 
     }
-
 }
-
-
-

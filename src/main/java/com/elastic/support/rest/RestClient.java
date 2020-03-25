@@ -195,5 +195,4 @@ public class RestClient implements Closeable {
             throw new RuntimeException("Error establishing http connection for: " + host, e);
         }
     }
-
 }
